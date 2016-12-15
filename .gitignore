@@ -41,3 +41,6 @@ assets/webpack-dev-stats.json
 
 # Webpack Hot Updates
 assets/lib/*.hot-update.*
+
+# Ignore the generated model files
+models
