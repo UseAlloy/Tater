@@ -46,6 +46,10 @@ auto.run((err) => {
   });
 
   app.get('/tables/:table', (req, res) => {
+    res.send(auto.tables[req.params.table]);
+  });
+
+  app.get('/tables/:table/data', (req, res) => {
     models[req.params.table].schema('alloy').findAll({})
       .then((data) => {
         res.send(data);
