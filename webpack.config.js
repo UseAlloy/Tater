@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const BundleTracker = require('webpack-bundle-tracker');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 
 module.exports = {
@@ -34,6 +35,10 @@ module.exports = {
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
+    new CleanWebpackPlugin(['assets/lib'], {
+      root: __dirname,
+      exclude: ['index.html', 'tater.js'],
+    }),
   ],
 
   sassLoader: {
