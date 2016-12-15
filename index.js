@@ -22,6 +22,8 @@ app.get('/tables', (req, res) => {
   });
 });
 
+app.use(Express.static('assets/lib'));
+
 app.listen(3000, function () {
   console.log('App listening on port 3000')
 });
