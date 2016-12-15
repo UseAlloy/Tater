@@ -1,20 +1,27 @@
+const Express = require('express');
 const SequelizeAuto = require('sequelize-auto');
 
-const auto = new SequelizeAuto('database', 'user', 'pass', {
+const app = Express();
+const auto = new SequelizeAuto('alloy', 'postgres', '', {
     host: 'localhost',
-    dialect: 'mysql'|'mariadb'|'sqlite'|'postgres'|'mssql',
-    port: 'port',
+    schema: 'alloy',
+    dialect: 'postgres',
+    port: '5432',
     additional: {
-        timestamps: false
-        //...
+        timestamps: false,
     },
-    tables: ['table1', 'table2', 'table3']
-    //...
+    dialectOptions: {
+      schema: 'alloy',
+    }
 });
 
-auto.run(function (err) {
-  if (err) throw err;
+app.get('/tables', (req, res) => {
+  auto.run((err) => {
+    if (err) throw err;
+    res.send(auto.tables);
+  });
+});
 
-  console.log(auto.tables); // table list
-  console.log(auto.foreignKeys); // foreign key list
+app.listen(3000, function () {
+  console.log('App listening on port 3000')
 });
