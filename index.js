@@ -74,6 +74,7 @@ auto.run((err) => {
       ],
       group: [sequelize.fn('date_trunc', interval, sequelize.col(timestampField))],
       where: whereClause,
+      order: 'date ASC',
     })
       .then((data) => {
         res.send(data);
