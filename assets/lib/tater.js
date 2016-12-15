@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b88a59c6bcc9c0d59f0e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "c1adff01c81a12b2f986"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -607,6 +607,10 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var TaterPropTypes = {
+	  tables: _react.PropTypes.object.isRequired
+	};
+
 	var Tater = function (_React$Component) {
 	  _inherits(Tater, _React$Component);
 
@@ -620,7 +624,6 @@
 	    });
 
 	    _this.state = {
-	      tables: {},
 	      tableName: false,
 	      columnName: false
 	    };
@@ -628,22 +631,6 @@
 	  }
 
 	  _createClass(Tater, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var _this2 = this;
-
-	      _jquery2.default.ajax({
-	        url: '/tables',
-	        method: 'GET',
-	        success: function success(data) {
-	          _this2.setState({ tables: data });
-	        },
-	        error: function error() {
-	          console.log('Something went wrong');
-	        }
-	      });
-	    }
-	  }, {
 	    key: '_handleUpdateState',
 	    value: function _handleUpdateState(event) {
 	      var newState = {};
@@ -653,7 +640,7 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var tables = this.state.tables;
+	      var tables = this.props.tables;
 	      var tableName = this.state.tableName;
 	      var columnName = this.state.columnName;
 
@@ -705,8 +692,19 @@
 	  return Tater;
 	}(_react2.default.Component);
 
+	Tater.propTypes = TaterPropTypes;
+
 	document.addEventListener('DOMContentLoaded', function () {
-	  _reactDom2.default.render(_react2.default.createElement(Tater, null), document.getElementById('tater-container'));
+	  _jquery2.default.ajax({
+	    url: '/tables',
+	    method: 'GET',
+	    success: function success(data) {
+	      _reactDom2.default.render(_react2.default.createElement(Tater, { tables: data }), document.getElementById('tater-container'));
+	    },
+	    error: function error() {
+	      console.log('Something went wrong');
+	    }
+	  });
 	});
 
 /***/ },

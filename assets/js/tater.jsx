@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 
 
+const TaterPropTypes = {
+  tables: PropTypes.object.isRequired,
+};
+
 class Tater extends React.Component {
   constructor(props) {
     super(props);
@@ -12,24 +16,9 @@ class Tater extends React.Component {
     ].forEach(method => { this[method] = this[method].bind(this); });
 
     this.state = {
-      tables: {},
       tableName: false,
       columnName: false,
     }
-  }
-
-
-  componentDidMount() {
-    $.ajax({
-      url: '/tables',
-      method: 'GET',
-      success: (data) => {
-        this.setState({ tables: data });
-      },
-      error: () => {
-        console.log('Something went wrong');
-      }
-    })
   }
 
 
@@ -41,7 +30,7 @@ class Tater extends React.Component {
 
 
   render() {
-    const tables = this.state.tables;
+    const tables = this.props.tables;
     const tableName = this.state.tableName;
     const columnName = this.state.columnName;
 
@@ -76,8 +65,18 @@ class Tater extends React.Component {
     );
   }
 }
+Tater.propTypes = TaterPropTypes;
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(<Tater />, document.getElementById('tater-container'));
+  $.ajax({
+    url: '/tables',
+    method: 'GET',
+    success: (data) => {
+      ReactDOM.render(<Tater tables={data} />, document.getElementById('tater-container'));
+    },
+    error: () => {
+      console.log('Something went wrong');
+    }
+  })
 });
