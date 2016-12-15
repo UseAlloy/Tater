@@ -1,15 +1,13 @@
 const SequelizeAuto = require('sequelize-auto');
 
-const auto = new SequelizeAuto('database', 'user', 'pass', {
+const auto = new SequelizeAuto('alloy', 'postgres', '', {
     host: 'localhost',
-    dialect: 'mysql'|'mariadb'|'sqlite'|'postgres'|'mssql',
-    port: 'port',
+    schema: 'alloy',
+    dialect: 'postgres',
+    port: '5432',
     additional: {
-        timestamps: false
-        //...
+        timestamps: false,
     },
-    tables: ['table1', 'table2', 'table3']
-    //...
 });
 
 auto.run(function (err) {
