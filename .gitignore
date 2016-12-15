@@ -42,6 +42,9 @@ assets/webpack-dev-stats.json
 # Webpack Hot Updates
 assets/lib/*.hot-update.*
 
+# Webpack generated file
+assets/lib/tater.js
+
 # Ignore the generated model files
 models
 
