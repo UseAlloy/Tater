@@ -8,6 +8,9 @@ const auto = new SequelizeAuto('alloy', 'postgres', '', {
     additional: {
         timestamps: false,
     },
+    dialectOptions: {
+      schema: 'alloy',
+    }
 });
 
 auto.run(function (err) {
