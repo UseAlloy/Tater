@@ -1,0 +1,14 @@
+{
+  "name": "tater",
+  "version": "0.0.1",
+  "description": "Miniature horse type thing that looks like a potato",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Definitely not Tater",
+  "license": "ISC",
+  "dependencies": {
+    "sequelize-auto": "^0.4.18"
+  }
+}
