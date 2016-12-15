@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "compile-assets": "./node_modules/.bin/webpack --progress --colors",
     "watch-assets": "./node_modules/.bin/webpack --progress --colors --watch"
   },
   "author": "Definitely not Tater",
