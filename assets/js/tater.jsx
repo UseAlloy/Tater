@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import moment from 'moment';
-import { LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Line } from 'recharts';
+import c3 from 'c3';
 
 
 const DATE_RANGE_OPTIONS = {
@@ -37,6 +37,7 @@ class Tater extends React.Component {
       columnName: false,
       dateRange: 'month',
       interval: 'day',
+      tableData: [],
     };
   }
 
@@ -53,19 +54,43 @@ class Tater extends React.Component {
   }
 
 
+  generateChart() {
+    c3.generate({
+      bindto: '#tater-chart',
+      data: {
+        x: 'x',
+        xFormat: '%Y-%m-%d',
+        columns: [
+          ['x'].concat(this.state.tableData.map(d => moment(d.date).format('YYYY-MM-DD'))),
+          ['count'].concat(this.state.tableData.map(d => d.count)),
+        ],
+      },
+      axis: {
+        x: {
+          localtime: false,
+          type: 'timeseries',
+          tick: {
+            format: '%m-%d'
+          }
+        }
+      },
+    });
+  }
+
+
   requestData() {
     if (this.state.tableName && this.state.columnName) {
       const now = moment();
       $.ajax({
-        url: `/tables/${this.state.tableName}`,
+        url: `/tables/${this.state.tableName}/trend`,
         method: 'GET',
         data: {
-          start_time: now.subtract(DATE_RANGE_OPTIONS[this.state.dateRange].days, 'days'),
-          end_time: now,
+          start_time: now.subtract(DATE_RANGE_OPTIONS[this.state.dateRange].days, 'days').format(),
+          end_time: now.format(),
           interval: this.state.interval,
           timestamp_field: this.state.columnName,
         },
-        success: (data) => { this.setState({ tableData: data }); },
+        success: (data) => { this.setState({ tableData: data }, () => { this.generateChart(); }); },
         error: () => { console.log('Something went wrong.'); },
       });
     } else {
@@ -115,7 +140,9 @@ class Tater extends React.Component {
               onChange={this._handleUpdateState}
             >
               {Object.keys(DATE_RANGE_OPTIONS).map((rangeOption, index) => (
-                <option key={index} value={rangeOption}>{rangeOption.text}</option>
+                <option key={index} value={rangeOption}>
+                  {DATE_RANGE_OPTIONS[rangeOption].text}
+                </option>
               ))}
             </select>
 
@@ -125,24 +152,15 @@ class Tater extends React.Component {
               onChange={this._handleUpdateState}
             >
               {Object.keys(INTERVAL_OPTIONS).map((intervalOption, index) => (
-                <option key={index} value={intervalOption}>{intervalOption.text}</option>
+                <option key={index} value={intervalOption}>
+                  {INTERVAL_OPTIONS[intervalOption].text}
+                </option>
               ))}
             </select>
           </div>
         ) : false}
 
-        {this.state.tableData ? (
-          <div className="tater-chart">
-            <LineChart width={600} height={400} data={this.state.tableData}>
-              <XAxis dataKey={this.state.columnName} />
-              <YAxis dataKey="count" />
-              <CartesianGrid strokeDasharray="3 3" />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="count" stroke="#D63B3B" />
-            </LineChart>
-          </div>
-        ) : false}
+        <div id="tater-chart" />
       </div>
     );
   }
