@@ -1,5 +1,7 @@
+const Express = require('express');
 const SequelizeAuto = require('sequelize-auto');
 
+const app = Express();
 const auto = new SequelizeAuto('alloy', 'postgres', '', {
     host: 'localhost',
     schema: 'alloy',
@@ -13,9 +15,13 @@ const auto = new SequelizeAuto('alloy', 'postgres', '', {
     }
 });
 
-auto.run(function (err) {
-  if (err) throw err;
+app.get('/tables', (req, res) => {
+  auto.run((err) => {
+    if (err) throw err;
+    res.send(auto.tables);
+  });
+});
 
-  console.log(auto.tables); // table list
-  console.log(auto.foreignKeys); // foreign key list
+app.listen(3000, function () {
+  console.log('App listening on port 3000')
 });
