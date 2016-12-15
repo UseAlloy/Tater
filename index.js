@@ -28,6 +28,8 @@ const sequelize = new Sequelize('alloy', 'postgres', '', {
   }
 });
 
+app.use(Express.static('assets/lib'));
+
 auto.run((err) => {
   const models = {};
 
@@ -58,3 +60,5 @@ auto.run((err) => {
     console.log('App listening on port 3000')
   });
 })
+
+
