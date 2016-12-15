@@ -56,6 +56,34 @@ auto.run((err) => {
       });
   });
 
+  app.get('/tables/:table/trend', (req, res) => {
+    const whereClause = {};
+    const timestampField = req.query.timestamp_field || 'timestamp';
+    const interval = req.query.interval || 'month';
+    if (req.query.start_time) {
+      whereClause[timestampField] = {$gte: req.query.start_time};
+    }
+
+    if (req.query.end_time) {
+      whereClause[timestampField] = {$lte: req.query.end_time};
+    }
+    models[req.params.table].schema('alloy').findAll({
+      attributes: [
+        [sequelize.fn('date_trunc', interval, sequelize.col(timestampField)), 'date'],
+        [sequelize.fn('count', sequelize.col('*')), 'count'],
+      ],
+      group: [sequelize.fn('date_trunc', interval, sequelize.col(timestampField))],
+      where: whereClause,
+    })
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.error("Goddam error")
+      });
+  });
+
   app.listen(3000, function () {
     console.log('App listening on port 3000')
   });
