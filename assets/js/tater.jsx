@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import moment from 'moment';
 import c3 from 'c3';
-
+import 'c3/c3.css';
 
 const DATE_RANGE_OPTIONS = {
   day: { text: 'Past Day', days: 1 },

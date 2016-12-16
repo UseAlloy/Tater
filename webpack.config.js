@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const BundleTracker = require('webpack-bundle-tracker');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   context: __dirname,
@@ -23,6 +23,14 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel?presets[]=react,presets[]=es2015',
       }, // to transform JSX into JS
+      {
+        test: /\.scss$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader'),
+      }, // compile scss to css
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader'),
+      }, // compile css
     ],
   },
 
@@ -39,6 +47,7 @@ module.exports = {
       root: __dirname,
       exclude: ['index.html', 'tater.js'],
     }),
+    new ExtractTextPlugin('[name].css'),
   ],
 
   sassLoader: {
@@ -49,6 +58,6 @@ module.exports = {
 
   resolve: {
     modulesDirectories: ['./node_modules'],
-    extensions: ['', '.js', '.jsx'],
+    extensions: ['', '.js', '.jsx','.css'],
   },
 };

@@ -45,6 +45,9 @@ assets/lib/*.hot-update.*
 # Webpack generated file
 assets/lib/tater.js
 
+# Webpack generate file
+assets/lib/tater.css
+
 # Ignore the generated model files
 models
 
