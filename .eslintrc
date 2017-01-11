@@ -1,3 +1,30 @@
 {
-  "extends": "airbnb-base"
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      impliedStrict: true,
+      "ecmaFeatures": {
+        "jsx": false
+      }
+    }
+  },
+  "extends": "airbnb-base",
+  "rules": {
+    "comma-dangle": ["error", {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "never",
+        "exports": "never",
+        "functions": "ignore"
+    }],
+    // 2 - exceptions are treated as errors
+    // 100 - max line length is 100
+    // 2 - tab is equal to 2 spaces
+    "max-len": [2, 100, 2, {
+      "ignoreComments": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true
+    }],
+    no-console: ["error", { allow: ["log", "warn", "error"] }]
+  }
 }
