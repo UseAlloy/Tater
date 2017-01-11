@@ -96,13 +96,14 @@ class Tater extends React.Component {
 
   requestData() {
     if (this.state.tableName && this.state.columnName) {
-      const now = moment();
       $.ajax({
         url: `/tables/${this.state.tableName}/trend`,
         method: 'GET',
         data: {
-          start_time: now.subtract(DATE_RANGE_OPTIONS[this.state.dateRange].days, 'days').format(),
-          end_time: now.format(),
+          start_time: moment().subtract(
+            DATE_RANGE_OPTIONS[this.state.dateRange].days, 'days'
+          ).utc().format(),
+          end_time: moment().utc().format(),
           interval: this.state.interval,
           timestamp_field: this.state.columnName,
         },

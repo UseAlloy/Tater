@@ -68,14 +68,17 @@ auto.run(() => {
 
     const whereClause = {};
     const timestampField = req.query.timestamp_field || Config.defaults.timestampField;
+    whereClause[timestampField] = {};
     const interval = req.query.interval || Config.defaults.interval;
+
     if (req.query.start_time) {
-      whereClause[timestampField] = { $gte: req.query.start_time };
+      whereClause[timestampField].$gte = req.query.start_time;
     }
 
     if (req.query.end_time) {
-      whereClause[timestampField] = { $lte: req.query.end_time };
+      whereClause[timestampField].$lte = req.query.end_time;
     }
+
     return model.schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({
       where: whereClause,
       order: `${timestampField} ASC`,
