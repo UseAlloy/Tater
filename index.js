@@ -112,7 +112,7 @@ auto.run(() => {
         const allDatesWithCounts = _.unionBy(countArr, allDates, 'date');
 
         console.log(allDatesWithCounts);
-        res.send(allDatesWithCounts);
+        res.send(_.orderBy(allDatesWithCounts, 'date'));
       })
       .catch(err =>
         console.error(err)
