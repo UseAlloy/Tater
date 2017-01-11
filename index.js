@@ -31,7 +31,11 @@ auto.run((err) => {
   });
 
   app.get('/tables/:table/data', (req, res) => {
-    models[req.params.table].schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({})
+    const model = models[req.params.table];
+    if (!model) {
+      return res.status(404).send({status: 'error', message: `Table ${req.params.table} does not exist`});
+    }
+    model.schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({})
       .then((data) => {
         res.send(data);
       })
@@ -42,6 +46,11 @@ auto.run((err) => {
   });
 
   app.get('/tables/:table/trend', (req, res) => {
+    const model = models[req.params.table];
+    if (!model) {
+      return res.status(404).send({status: 'error', message: `Table ${req.params.table} does not exist`});
+    }
+
     const whereClause = {};
     const timestampField = req.query.timestamp_field || Config.defaults.timestampField;
     const interval = req.query.interval || Config.defaults.interval;
@@ -52,7 +61,7 @@ auto.run((err) => {
     if (req.query.end_time) {
       whereClause[timestampField] = {$lte: req.query.end_time};
     }
-    models[req.params.table].schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({
+    model.schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({
       attributes: [
         [sequelize.fn('date_trunc', interval, sequelize.col(timestampField)), 'date'],
         [sequelize.fn('count', sequelize.col('*')), 'count'],
