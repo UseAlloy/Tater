@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+
+  div.tater-component {
+    div.tater-header {
+      background-color: #DDDDDD;
+      width: 100%;
+      padding: 10px;
+
+      select {
+        height: 28px;
+        font-size: 14px;
+        margin-right: 10px;
+      }
+
+      div.date-selects {
+        display: inline;
+      }
+    }
+
+    div#tater-chart {
+      padding: 20px;
+    }
+  }
+}

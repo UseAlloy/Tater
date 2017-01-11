@@ -30,8 +30,11 @@
     "extract-text-webpack-plugin": "^1.0.1",
     "jquery": "^3.1.1",
     "moment": "^2.17.1",
+<<<<<<< HEAD
     "mysql2": "^1.1.2",
+=======
     "node-sass": "^4.2.0",
+>>>>>>> 8f69b77ea8ffb673579f9e3ed18f93f180d79f81
     "pg": "^6.1.2",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
