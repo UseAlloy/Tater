@@ -32,6 +32,8 @@ class Tater extends React.Component {
 
     [
       '_handleUpdateState',
+      'generateChart',
+      'requestData'
     ].forEach(method => { this[method] = this[method].bind(this); });
 
     this.state = {
