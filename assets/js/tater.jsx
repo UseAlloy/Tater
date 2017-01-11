@@ -41,7 +41,7 @@ class Tater extends React.Component {
     this.state = {
       tableName: false,
       columnName: false,
-      dateRange: 'month',
+      dateRange: 'three_months',
       interval: 'day',
       tableData: [],
     };
