@@ -1,11 +1,61 @@
 body {
   margin: 0;
+  padding: 0;
 
   div.tater-component {
+    .row {
+      margin: 0;
+    }
+
+    .keen-dataviz .keen-dataviz-metric-value {
+      font-size: 4vw;
+    }
+
+    #app-toolbar {
+      background: rgba(0,0,0,.75);
+      box-shadow: 0 1px 5px rgba(0,0,0,.1);
+      color: #fff;
+      /*position: fixed;*/
+      top: 0px;
+      width: 100%;
+      z-index: 1;
+      margin-bottom: 20px;
+    }
+
+    #app-toolbar .btn-primary {
+      background-color: #00afd7;
+      border: medium none;
+    }
+    #app-toolbar .btn-primary:focus,
+    #app-toolbar .btn-primary:hover {
+      background-color: #0098BB;
+    }
+
+    .tools {
+      min-height: 75px;
+      padding: 0 5px 0 0;
+    }
+
+    .tool input, .tool select {
+      background: rgba(0,0,0,.5);
+      border: medium none;
+      box-shadow: none;
+      color: #e7e7e7;
+      float: left;
+      margin: 0 1%;
+    }
+    .radius input, .radius select {
+      width: 48%;
+    }
+    .tool input,
+    .tool label,
+    .tool h5 {
+      text-shadow: 0 0 1px #000;
+    }
+
     div.tater-header {
       background-color: #DDDDDD;
       width: auto;
-      padding: 10px;
       font-family: BlinkMacSystemFont, Monaco;
 
       label {

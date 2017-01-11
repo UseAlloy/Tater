@@ -4,6 +4,8 @@ import $ from 'jquery';
 import moment from 'moment';
 import c3 from 'c3';
 import { DateRangePicker } from 'react-dates';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'keen-dataviz/dist/keen-dataviz.css';
 
 import 'c3/c3.css';
 import 'react-dates/lib/css/_datepicker.css';
@@ -143,75 +145,91 @@ class Tater extends React.Component {
 
     return (
       <div className="tater-component">
-        <div className="tater-header">
-          {tableName ? (
-            <label>Table:</label>
-          ) : false}
-
-          <select
-            id="tableName"
-            name="tableName"
-            value={tableName}
-            onChange={this._handleUpdateState}
-          >
-            {[
-              <option key={0} value="false">Select a Table</option>,
-            ].concat(this.props.timestampTables.sort((a, b) => (
-              a.localeCompare(b)
-            )).map((table, idx) => (
-              <option key={idx + 1} value={table}>{table}</option>
-            )))}
-          </select>
-
-          {tableName ? (
-            <div className="input-wrapper">
-              <label>Column:</label>
+        <div id="app-toolbar" className="tater-header">
+          <div className="row tools">
+            <div className="col-sm-2 tool coordinates">
+              <h5>Model</h5>
               <select
-                name="columnName"
-                value={columnName}
+                id="tableName"
+                className="form-control"
+                name="tableName"
+                value={tableName}
                 onChange={this._handleUpdateState}
               >
-                {Object.keys(tables[tableName]).filter(column => (
-                  tables[tableName][column].type.indexOf('TIMESTAMP') > -1 ||
-                    tables[tableName][column].type.indexOf('DATE') > -1
-                )).sort((a, b) => a.localeCompare(b)).map((column, idx) => (
-                  <option key={idx + 1} value={column}>{column}</option>
-                ))}
+                {[
+                  <option key={0} value="false">Select a Table</option>,
+                ].concat(this.props.timestampTables.sort((a, b) => (
+                  a.localeCompare(b)
+                )).map((table, idx) => (
+                  <option key={idx + 1} value={table}>{table}</option>
+                )))}
               </select>
             </div>
-          ) : false}
 
-          {columnName ? (
-            <div className="input-wrapper">
-              <label>Date Range:</label>
-              <DateRangePicker
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                focusedInput={this.state.focusedInput}
-                isDayBlocked={(day) => day.isAfter(moment())}
-                isOutsideRange={() => false}
-                initialVisibleMonth={() => this.state.startDate}
-                onDatesChange={this._handleUpdateDateRange}
-                onFocusChange={this._handleUpdateFocusedInput}
-              />
+            {tableName ? (
+              <div className="col-sm-2 tool coordinates">
+                <h5>Column</h5>
+                <select
+                  name="columnName"
+                  value={columnName}
+                  onChange={this._handleUpdateState}
+                >
+                  {Object.keys(tables[tableName]).filter(column => (
+                    tables[tableName][column].type.indexOf('TIMESTAMP') > -1 ||
+                      tables[tableName][column].type.indexOf('DATE') > -1
+                  )).sort((a, b) => a.localeCompare(b)).map((column, idx) => (
+                    <option key={idx + 1} value={column}>{column}</option>
+                  ))}
+                </select>
+              </div>
+            ) : false}
 
-              <label>Interval:</label>
-              <select
-                name="interval"
-                value={this.state.interval}
-                onChange={this._handleUpdateState}
-              >
-                {Object.keys(INTERVAL_OPTIONS).map((intervalOption, index) => (
-                  <option key={index} value={intervalOption}>
-                    {INTERVAL_OPTIONS[intervalOption].text}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : false}
+            {columnName ? (
+              <div>
+                <div className="col-sm-3 tool">
+                  <h5>Date Range:</h5>
+                  <DateRangePicker
+                    startDate={this.state.startDate}
+                    endDate={this.state.endDate}
+                    focusedInput={this.state.focusedInput}
+                    isDayBlocked={(day) => day.isAfter(moment())}
+                    isOutsideRange={() => false}
+                    initialVisibleMonth={() => this.state.startDate}
+                    onDatesChange={this._handleUpdateDateRange}
+                    onFocusChange={this._handleUpdateFocusedInput}
+                  />
+                </div>
+
+                <div className="col-sm-2 tool coordinates">
+                  <h5>Interval:</h5>
+                  <select
+                    name="interval"
+                    value={this.state.interval}
+                    onChange={this._handleUpdateState}
+                  >
+                    {Object.keys(INTERVAL_OPTIONS).map((intervalOption, index) => (
+                      <option key={index} value={intervalOption}>
+                        {INTERVAL_OPTIONS[intervalOption].text}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ) : false}
+          </div>
         </div>
 
-        <div id="tater-chart" />
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-sm-12">
+              <div className="chart-wrapper">
+                <div className="chart-stage">
+                  <div id="tater-chart" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
