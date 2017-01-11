@@ -6,6 +6,14 @@ body {
       background-color: #DDDDDD;
       width: auto;
       padding: 10px;
+      font-family: BlinkMacSystemFont, Monaco;
+
+      label {
+        font-size: 14px;
+        font-weight: bold;
+        font-family: BlinkMacSystemFont, Monaco;
+        margin-right: 5px;
+      }
 
       select {
         height: 28px;
@@ -13,8 +21,14 @@ body {
         margin-right: 10px;
       }
 
-      div.date-selects {
+      div.input-wrapper {
         display: inline;
+      }
+
+      div.DateRangePicker {
+        input.DateInput__input {
+          font-size: 14px;
+        }
       }
     }
 
