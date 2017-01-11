@@ -70,6 +70,9 @@ class Tater extends React.Component {
   generateChart() {
     c3.generate({
       bindto: '#tater-chart',
+      size: {
+        width: 960,
+      },
       data: {
         x: 'x',
         xFormat: '%Y-%m-%d',
