@@ -11,7 +11,7 @@ const createDateArray = (startDate, endDate, interval) => {
   const dateArray = [];
   const date = startDate.startOf(interval);
   while (date <= endDate) {
-    dateArray.push(Moment(date).startOf(interval));
+    dateArray.push(Moment.utc(date).startOf(interval).format());
     date.add(1, interval);
   }
 
@@ -99,18 +99,19 @@ auto.run(() => {
     })
       .then((data) => {
         const groups = _.groupBy(data, inst =>
-          Moment(inst.dataValues.timestamp).startOf(interval).format()
+          Moment.utc(inst.dataValues.timestamp).startOf(interval).format()
         );
         const countArr = _.map(groups, (value, key) => ({
           date: key,
           count: value.length,
         }));
-        const startDate = Moment(req.query.start_time ? new Date(req.query.start_time) : countArr[0].date);
-        const endDate = Moment(req.query.end_time ? new Date(req.query.end_time) : countArr[countArr.length - 1].date);
+        const startDate = Moment.utc(req.query.start_time ? new Date(req.query.start_time) : countArr[0].date);
+        const endDate = Moment.utc(req.query.end_time ? new Date(req.query.end_time) : countArr[countArr.length - 1].date);
 
         const allDates = createDateArray(startDate, endDate, interval);
         const allDatesWithCounts = _.unionBy(countArr, allDates, 'date');
 
+        console.log(allDatesWithCounts);
         res.send(allDatesWithCounts);
       })
       .catch(err =>
