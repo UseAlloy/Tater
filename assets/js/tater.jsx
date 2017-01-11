@@ -24,6 +24,7 @@ const INTERVAL_OPTIONS = {
 
 const TaterPropTypes = {
   tables: PropTypes.object.isRequired,
+  timestampTables: PropTypes.array.isRequired,
 };
 
 class Tater extends React.Component {
@@ -52,7 +53,15 @@ class Tater extends React.Component {
 
     newState[event.target.name] = value;
 
-    if (event.target.name === 'tableName' && !value) newState.columnName = false;
+    if (event.target.name === 'tableName') {
+      if (value) {
+        newState.columnName = Object.keys(this.props.tables[value]).find(column => (
+          this.props.tables[value][column].type.indexOf('TIMESTAMP') > -1
+        ));
+      } else {
+        newState.columnName = false;
+      }
+    }
 
     this.setState(newState, () => { this.requestData(); });
   }
@@ -110,63 +119,63 @@ class Tater extends React.Component {
 
     return (
       <div className="tater-component">
-        <select
-          name="tableName"
-          value={tableName}
-          onChange={this._handleUpdateState}
-        >
-          {[
-            <option key={0} value="false">Select a Table</option>,
-          ].concat(Object.keys(tables).sort((a, b) => (
-            a.localeCompare(b)
-          )).map((table, idx) => (
-            <option key={idx + 1} value={table}>{table}</option>
-          )))}
-        </select>
-
-        {tableName ? (
+        <div className="tater-header">
           <select
-            name="columnName"
-            value={columnName}
+            name="tableName"
+            value={tableName}
             onChange={this._handleUpdateState}
           >
             {[
-              <option key={0} value="false">Select a Column</option>,
-            ].concat(Object.keys(tables[tableName]).sort((a, b) => (
+              <option key={0} value="false">Select a Table</option>,
+            ].concat(this.props.timestampTables.sort((a, b) => (
               a.localeCompare(b)
-            )).map((column, idx) => (
-              <option key={idx + 1} value={column}>{column}</option>
+            )).map((table, idx) => (
+              <option key={idx + 1} value={table}>{table}</option>
             )))}
           </select>
-        ) : false}
 
-        {columnName ? (
-          <div className="date-selects">
+          {tableName ? (
             <select
-              name="dateRange"
-              value={this.state.dateRange}
+              name="columnName"
+              value={columnName}
               onChange={this._handleUpdateState}
             >
-              {Object.keys(DATE_RANGE_OPTIONS).map((rangeOption, index) => (
-                <option key={index} value={rangeOption}>
-                  {DATE_RANGE_OPTIONS[rangeOption].text}
-                </option>
+              {Object.keys(tables[tableName]).filter(column => (
+                tables[tableName][column].type.indexOf('TIMESTAMP') > -1
+              )).sort((a, b) => a.localeCompare(b)).map((column, idx) => (
+                <option key={idx + 1} value={column}>{column}</option>
               ))}
             </select>
+          ) : false}
 
-            <select
-              name="interval"
-              value={this.state.interval}
-              onChange={this._handleUpdateState}
-            >
-              {Object.keys(INTERVAL_OPTIONS).map((intervalOption, index) => (
-                <option key={index} value={intervalOption}>
-                  {INTERVAL_OPTIONS[intervalOption].text}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : false}
+          {columnName ? (
+            <div className="date-selects">
+              <select
+                name="dateRange"
+                value={this.state.dateRange}
+                onChange={this._handleUpdateState}
+              >
+                {Object.keys(DATE_RANGE_OPTIONS).map((rangeOption, index) => (
+                  <option key={index} value={rangeOption}>
+                    {DATE_RANGE_OPTIONS[rangeOption].text}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                name="interval"
+                value={this.state.interval}
+                onChange={this._handleUpdateState}
+              >
+                {Object.keys(INTERVAL_OPTIONS).map((intervalOption, index) => (
+                  <option key={index} value={intervalOption}>
+                    {INTERVAL_OPTIONS[intervalOption].text}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : false}
+        </div>
 
         <div id="tater-chart" />
       </div>
@@ -181,7 +190,16 @@ document.addEventListener('DOMContentLoaded', () => {
     url: '/tables',
     method: 'GET',
     success: (data) => {
-      ReactDOM.render(<Tater tables={data} />, document.getElementById('tater-container'));
+      const timestampTables = Object.keys(data).filter(tableName => (
+        Object.keys(data[tableName]).filter(column => (
+          data[tableName][column].type.indexOf('TIMESTAMP') > -1
+        )).length > 0
+      ));
+
+      ReactDOM.render(
+        <Tater tables={data} timestampTables={timestampTables} />,
+        document.getElementById('tater-container')
+      );
     },
     error: () => {
       console.log('Something went wrong');
