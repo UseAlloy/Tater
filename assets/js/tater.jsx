@@ -11,6 +11,7 @@ const DATE_RANGE_OPTIONS = {
   day: { text: 'Past Day', days: 1 },
   week: { text: 'Past Week', days: 7 },
   month: { text: 'Past Month', days: 30 },
+  three_months: { text: 'Past 3 Months', days: 90 },
   year: { text: 'Past Year', days: 365 },
 };
 
