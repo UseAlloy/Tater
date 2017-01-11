@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import moment from 'moment';
 import c3 from 'c3';
+import { DateRangePicker } from 'react-dates';
 
 import 'c3/c3.css';
+import 'react-dates/lib/css/_datepicker.css';
 import '../css/tater.scss';
 
 const DATE_RANGE_OPTIONS = {
@@ -34,6 +36,8 @@ class Tater extends React.Component {
 
     [
       '_handleUpdateState',
+      '_handleUpdateDateRange',
+      '_handleUpdateFocusedInput',
       'generateChart',
       'requestData'
     ].forEach(method => { this[method] = this[method].bind(this); });
@@ -41,9 +45,11 @@ class Tater extends React.Component {
     this.state = {
       tableName: false,
       columnName: false,
-      dateRange: 'three_months',
+      startDate: moment().subtract(90, 'days').utc(),
+      endDate: moment().utc(),
       interval: 'day',
       tableData: [],
+      focusedInput: null,
     };
   }
 
@@ -66,6 +72,16 @@ class Tater extends React.Component {
     }
 
     this.setState(newState, () => { this.requestData(); });
+  }
+
+
+  _handleUpdateDateRange(range) {
+    this.setState(range, () => { this.requestData(); });
+  }
+
+
+  _handleUpdateFocusedInput(focusedInput) {
+    this.setState({ focusedInput });
   }
 
 
@@ -106,10 +122,8 @@ class Tater extends React.Component {
         url: `/tables/${this.state.tableName}/trend`,
         method: 'GET',
         data: {
-          start_time: moment().subtract(
-            DATE_RANGE_OPTIONS[this.state.dateRange].days, 'days'
-          ).utc().format(),
-          end_time: moment().utc().format(),
+          start_time: this.state.startDate.format(),
+          end_time: this.state.endDate.format(),
           interval: this.state.interval,
           timestamp_field: this.state.columnName,
         },
@@ -130,7 +144,12 @@ class Tater extends React.Component {
     return (
       <div className="tater-component">
         <div className="tater-header">
+          {tableName ? (
+            <label>Table:</label>
+          ) : false}
+
           <select
+            id="tableName"
             name="tableName"
             value={tableName}
             onChange={this._handleUpdateState}
@@ -145,34 +164,38 @@ class Tater extends React.Component {
           </select>
 
           {tableName ? (
-            <select
-              name="columnName"
-              value={columnName}
-              onChange={this._handleUpdateState}
-            >
-              {Object.keys(tables[tableName]).filter(column => (
-                tables[tableName][column].type.indexOf('TIMESTAMP') > -1 ||
-                  tables[tableName][column].type.indexOf('DATE') > -1
-              )).sort((a, b) => a.localeCompare(b)).map((column, idx) => (
-                <option key={idx + 1} value={column}>{column}</option>
-              ))}
-            </select>
+            <div className="input-wrapper">
+              <label>Column:</label>
+              <select
+                name="columnName"
+                value={columnName}
+                onChange={this._handleUpdateState}
+              >
+                {Object.keys(tables[tableName]).filter(column => (
+                  tables[tableName][column].type.indexOf('TIMESTAMP') > -1 ||
+                    tables[tableName][column].type.indexOf('DATE') > -1
+                )).sort((a, b) => a.localeCompare(b)).map((column, idx) => (
+                  <option key={idx + 1} value={column}>{column}</option>
+                ))}
+              </select>
+            </div>
           ) : false}
 
           {columnName ? (
-            <div className="date-selects">
-              <select
-                name="dateRange"
-                value={this.state.dateRange}
-                onChange={this._handleUpdateState}
-              >
-                {Object.keys(DATE_RANGE_OPTIONS).map((rangeOption, index) => (
-                  <option key={index} value={rangeOption}>
-                    {DATE_RANGE_OPTIONS[rangeOption].text}
-                  </option>
-                ))}
-              </select>
+            <div className="input-wrapper">
+              <label>Date Range:</label>
+              <DateRangePicker
+                startDate={this.state.startDate}
+                endDate={this.state.endDate}
+                focusedInput={this.state.focusedInput}
+                isDayBlocked={(day) => day.isAfter(moment())}
+                isOutsideRange={() => false}
+                initialVisibleMonth={() => this.state.startDate}
+                onDatesChange={this._handleUpdateDateRange}
+                onFocusChange={this._handleUpdateFocusedInput}
+              />
 
+              <label>Interval:</label>
               <select
                 name="interval"
                 value={this.state.interval}
