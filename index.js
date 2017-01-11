@@ -2,10 +2,24 @@ const Config = require('./config');
 const Express = require('express');
 const SequelizeAuto = require('sequelize-auto');
 const Sequelize = require('sequelize');
-const _ = require('underscore');
+const _ = require('lodash');
 const Moment = require('moment');
 const fs = require('fs');
 const path = require('path');
+
+const createDateArray = (startDate, endDate, interval) => {
+  const dateArray = [];
+  const date = startDate.startOf(interval);
+  while (date <= endDate) {
+    dateArray.push(Moment(date).startOf(interval));
+    date.add(1, interval);
+  }
+
+  return _.map(dateArray, dateVal => ({
+    date: dateVal,
+    count: 0,
+  }));
+};
 
 const app = Express();
 const auto = new SequelizeAuto(
@@ -84,18 +98,20 @@ auto.run(() => {
       order: `${timestampField} ASC`,
     })
       .then((data) => {
-        const countArr = [];
         const groups = _.groupBy(data, inst =>
           Moment(inst.dataValues.timestamp).startOf(interval).format()
         );
-        _.each(groups, (value, key) => {
-          countArr.push({
-            date: key,
-            count: value.length,
-          });
-        });
-        console.log(countArr);
-        res.send(countArr);
+        const countArr = _.map(groups, (value, key) => ({
+          date: key,
+          count: value.length,
+        }));
+        const startDate = Moment(req.query.start_time ? new Date(req.query.start_time) : countArr[0].date);
+        const endDate = Moment(req.query.end_time ? new Date(req.query.end_time) : countArr[countArr.length - 1].date);
+
+        const allDates = createDateArray(startDate, endDate, interval);
+        const allDatesWithCounts = _.unionBy(countArr, allDates, 'date');
+
+        res.send(allDatesWithCounts);
       })
       .catch(err =>
         console.error(err)
