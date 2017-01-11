@@ -57,7 +57,8 @@ class Tater extends React.Component {
     if (event.target.name === 'tableName') {
       if (value) {
         newState.columnName = Object.keys(this.props.tables[value]).find(column => (
-          this.props.tables[value][column].type.indexOf('TIMESTAMP') > -1
+          this.props.tables[value][column].type.indexOf('TIMESTAMP') > -1 ||
+            this.props.tables[value][column].type.indexOf('DATE') > -1
         ));
       } else {
         newState.columnName = false;
@@ -76,9 +77,13 @@ class Tater extends React.Component {
       },
       data: {
         x: 'x',
-        xFormat: '%Y-%m-%d',
+        xFormat: this.state.interval === 'hour' ? '%Y-%m-%d %H:%M:%S' : '%Y-%m-%d',
         columns: [
-          ['x'].concat(this.state.tableData.map(d => moment(d.date).format('YYYY-MM-DD'))),
+          ['x'].concat(this.state.tableData.map(d => (
+            this.state.interval === 'hour'
+              ? moment(d.date).format('YYYY-MM-DD HH:mm:ss')
+              : moment(d.date).format('YYYY-MM-DD')
+          ))),
           ['count'].concat(this.state.tableData.map(d => d.count)),
         ],
       },
@@ -87,7 +92,7 @@ class Tater extends React.Component {
           localtime: false,
           type: 'timeseries',
           tick: {
-            format: '%m-%d'
+            format: this.state.interval === 'hour' ? '%m-%d %H:%M' : '%m-%d',
           }
         }
       },
@@ -146,7 +151,8 @@ class Tater extends React.Component {
               onChange={this._handleUpdateState}
             >
               {Object.keys(tables[tableName]).filter(column => (
-                tables[tableName][column].type.indexOf('TIMESTAMP') > -1
+                tables[tableName][column].type.indexOf('TIMESTAMP') > -1 ||
+                  tables[tableName][column].type.indexOf('DATE') > -1
               )).sort((a, b) => a.localeCompare(b)).map((column, idx) => (
                 <option key={idx + 1} value={column}>{column}</option>
               ))}
@@ -197,7 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
     success: (data) => {
       const timestampTables = Object.keys(data).filter(tableName => (
         Object.keys(data[tableName]).filter(column => (
-          data[tableName][column].type.indexOf('TIMESTAMP') > -1
+          data[tableName][column].type.indexOf('TIMESTAMP') > -1 ||
+            data[tableName][column].type.indexOf('DATE') > -1
         )).length > 0
       ));
 
