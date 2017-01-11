@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import moment from 'moment';
 import c3 from 'c3';
+
 import 'c3/c3.css';
 
 const DATE_RANGE_OPTIONS = {
@@ -113,7 +114,9 @@ class Tater extends React.Component {
         >
           {[
             <option key={0} value="false">Select a Table</option>,
-          ].concat(Object.keys(tables).map((table, idx) => (
+          ].concat(Object.keys(tables).sort((a, b) => (
+            a.localeCompare(b)
+          )).map((table, idx) => (
             <option key={idx + 1} value={table}>{table}</option>
           )))}
         </select>
@@ -126,7 +129,9 @@ class Tater extends React.Component {
           >
             {[
               <option key={0} value="false">Select a Column</option>,
-            ].concat(Object.keys(tables[tableName]).map((column, idx) => (
+            ].concat(Object.keys(tables[tableName]).sort((a, b) => (
+              a.localeCompare(b)
+            )).map((column, idx) => (
               <option key={idx + 1} value={column}>{column}</option>
             )))}
           </select>
