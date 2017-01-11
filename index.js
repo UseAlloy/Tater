@@ -2,19 +2,21 @@ const Config = require('./config');
 const Express = require('express');
 const SequelizeAuto = require('sequelize-auto');
 const Sequelize = require('sequelize');
+const _ = require('underscore');
+const Moment = require('moment');
 const fs = require('fs');
 const path = require('path');
 
 const app = Express();
 const auto = new SequelizeAuto(
   Config.database.name,
-  Config.database.username,
+  Config.database.user,
   Config.database.password,
   Config.database.sequelizeOptions
 );
 const sequelize = new Sequelize(
   Config.database.name,
-  Config.database.username,
+  Config.database.user,
   Config.database.password,
   Config.database.sequelizeOptions
 );
@@ -51,9 +53,9 @@ auto.run(() => {
       .then((data) => {
         res.send(data);
       })
-      .catch((err) => {
-        res.error(err);
-      });
+      .catch(err =>
+        console.error(err)
+      );
   });
 
   app.get('/tables/:table/trend', (req, res) => {
@@ -75,19 +77,25 @@ auto.run(() => {
       whereClause[timestampField] = { $lte: req.query.end_time };
     }
     return model.schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({
-      attributes: [
-        [sequelize.fn('date_trunc', interval, sequelize.col(timestampField)), 'date'],
-        [sequelize.fn('count', sequelize.col('*')), 'count'],
-      ],
-      group: [sequelize.fn('date_trunc', interval, sequelize.col(timestampField))],
       where: whereClause,
-      order: 'date ASC',
+      order: `${timestampField} ASC`,
     })
       .then((data) => {
-        res.send(data);
+        const countArr = [];
+        const groups = _.groupBy(data, inst =>
+          Moment(inst.dataValues.timestamp).startOf(interval).format()
+        );
+        _.each(groups, (value, key) => {
+          countArr.push({
+            date: key,
+            count: value.length,
+          });
+        });
+        console.log(countArr);
+        res.send(countArr);
       })
       .catch(err =>
-        res.error(err)
+        console.error(err)
       );
   });
 

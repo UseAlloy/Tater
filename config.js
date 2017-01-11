@@ -9,7 +9,7 @@ module.exports = {
       dialect: 'postgres',
       port: '5432',
       additional: {
-          timestamps: false,
+        timestamps: false,
       },
       dialectOptions: {
         schema: 'alloy',
