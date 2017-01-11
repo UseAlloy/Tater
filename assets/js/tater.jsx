@@ -5,6 +5,7 @@ import moment from 'moment';
 import c3 from 'c3';
 
 import 'c3/c3.css';
+import '../css/tater.scss';
 
 const DATE_RANGE_OPTIONS = {
   day: { text: 'Past Day', days: 1 },
@@ -138,7 +139,7 @@ class Tater extends React.Component {
         ) : false}
 
         {columnName ? (
-          <div>
+          <div className="date-selects">
             <select
               name="dateRange"
               value={this.state.dateRange}
