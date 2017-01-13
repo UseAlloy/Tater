@@ -2,22 +2,16 @@ import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import moment from 'moment';
-import c3 from 'c3';
+// import c3 from 'c3';
 import { DateRangePicker } from 'react-dates';
+import 'keen-dataviz';
 import 'bootstrap/dist/css/bootstrap.css';
+import 'keen-dashboards/dist/keen-dashboards.css';
 import 'keen-dataviz/dist/keen-dataviz.css';
 
-import 'c3/c3.css';
+// import 'c3/c3.css';
 import 'react-dates/lib/css/_datepicker.css';
 import '../css/tater.scss';
-
-const DATE_RANGE_OPTIONS = {
-  day: { text: 'Past Day', days: 1 },
-  week: { text: 'Past Week', days: 7 },
-  month: { text: 'Past Month', days: 30 },
-  three_months: { text: 'Past 3 Months', days: 90 },
-  year: { text: 'Past Year', days: 365 },
-};
 
 const INTERVAL_OPTIONS = {
   hour: { text: 'Hour' },
@@ -26,11 +20,12 @@ const INTERVAL_OPTIONS = {
   month: { text: 'Month' },
 };
 
-
 const TaterPropTypes = {
   tables: PropTypes.object.isRequired,
   timestampTables: PropTypes.array.isRequired,
 };
+
+let main = '';
 
 class Tater extends React.Component {
   constructor(props) {
@@ -41,8 +36,8 @@ class Tater extends React.Component {
       '_handleUpdateDateRange',
       '_handleUpdateFocusedInput',
       'generateChart',
-      'requestData'
-    ].forEach(method => { this[method] = this[method].bind(this); });
+      'requestData',
+    ].forEach((method) => { this[method] = this[method].bind(this); });
 
     this.state = {
       tableName: false,
@@ -88,33 +83,42 @@ class Tater extends React.Component {
 
 
   generateChart() {
-    c3.generate({
-      bindto: '#tater-chart',
-      size: {
-        width: 960,
-      },
-      data: {
-        x: 'x',
-        xFormat: this.state.interval === 'hour' ? '%Y-%m-%d %H:%M:%S' : '%Y-%m-%d',
-        columns: [
-          ['x'].concat(this.state.tableData.map(d => (
-            this.state.interval === 'hour'
-              ? moment(d.date).format('YYYY-MM-DD HH:mm:ss')
-              : moment(d.date).format('YYYY-MM-DD')
-          ))),
-          ['count'].concat(this.state.tableData.map(d => d.count)),
-        ],
-      },
-      axis: {
-        x: {
-          localtime: false,
-          type: 'timeseries',
-          tick: {
-            format: this.state.interval === 'hour' ? '%m-%d %H:%M' : '%m-%d',
-          }
-        }
-      },
-    });
+
+    main = new Keen.Dataviz()
+      .el(document.getElementById('tater-chart'))
+      .chartType('line')
+      .height(250)
+      .colors(['#6ab975'])
+      .chartOptions({
+        data: {
+          x: 'date',
+        },
+        axis: {
+          x: {
+            localtime: false,
+            type: 'timeseries',
+            tick: {
+              format: '%m-%d',
+            },
+          },
+        },
+        tooltip: {
+          format: {
+            name: (name, ratio, id, index) => {
+              if (index > 0) {
+                const previousValue = main.dataset.matrix[index][1];
+                const currentValue = main.dataset.matrix[index + 1][1];
+                const growth = ((previousValue - currentValue) / previousValue) * -100;
+                return `${growth}%`;
+              }
+              return 'N/A';
+            },
+          },
+        },
+      })
+    .prepare()
+    .data(this.state.tableData)
+    .render();
   }
 
 
@@ -129,7 +133,13 @@ class Tater extends React.Component {
           interval: this.state.interval,
           timestamp_field: this.state.columnName,
         },
-        success: (data) => { this.setState({ tableData: data }, () => { this.generateChart(); }); },
+        success: (data) => {
+          const mainDataSet = new Dataset();
+          Object.keys(data).forEach((key) => {
+            mainDataSet.set([this.state.tableName, data[key].date], data[key].count);
+          });
+          this.setState({ tableData: mainDataSet }, () => { this.generateChart(); });
+        },
         error: () => { console.log('Something went wrong.'); },
       });
     } else {
@@ -171,6 +181,7 @@ class Tater extends React.Component {
                 <h5>Column</h5>
                 <select
                   name="columnName"
+                  className="form-control"
                   value={columnName}
                   onChange={this._handleUpdateState}
                 >
@@ -204,6 +215,7 @@ class Tater extends React.Component {
                   <h5>Interval:</h5>
                   <select
                     name="interval"
+                    className="form-control"
                     value={this.state.interval}
                     onChange={this._handleUpdateState}
                   >
@@ -219,11 +231,14 @@ class Tater extends React.Component {
           </div>
         </div>
 
-        <div className="container-fluid">
+        <div className="container-fluid main-dashboard">
           <div className="row">
             <div className="col-sm-12">
               <div className="chart-wrapper">
                 <div className="chart-stage">
+                  <div className="chart-title">
+                    Model Stats
+                  </div>
                   <div id="tater-chart" />
                 </div>
               </div>
@@ -251,11 +266,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       ReactDOM.render(
         <Tater tables={data} timestampTables={timestampTables} />,
-        document.getElementById('tater-container')
+        document.getElementById('tater-container'),
       );
     },
     error: () => {
       console.log('Something went wrong');
-    }
-  })
+    },
+  });
 });

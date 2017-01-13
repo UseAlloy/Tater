@@ -8,6 +8,10 @@
       }
     }
   },
+  "env": {
+    "browser": true,
+    "node": true
+  },
   "extends": "airbnb-base",
   "rules": {
     "comma-dangle": ["error", {
