@@ -42,7 +42,7 @@ class Tater extends React.Component {
     this.state = {
       tableName: false,
       columnName: false,
-      startDate: moment().subtract(90, 'days').utc(),
+      startDate: moment().subtract(3, 'months').utc(),
       endDate: moment().utc(),
       interval: 'day',
       tableData: [],
@@ -83,7 +83,6 @@ class Tater extends React.Component {
 
 
   generateChart() {
-
     main = new Keen.Dataviz()
       .el(document.getElementById('tater-chart'))
       .chartType('line')
