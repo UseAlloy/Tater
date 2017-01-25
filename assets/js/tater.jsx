@@ -202,7 +202,7 @@ class Tater extends React.Component {
                     startDate={this.state.startDate}
                     endDate={this.state.endDate}
                     focusedInput={this.state.focusedInput}
-                    isDayBlocked={(day) => day.isAfter(moment())}
+                    isDayBlocked={day => day.isAfter(moment())}
                     isOutsideRange={() => false}
                     initialVisibleMonth={() => this.state.startDate}
                     onDatesChange={this._handleUpdateDateRange}
