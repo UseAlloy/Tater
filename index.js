@@ -105,14 +105,22 @@ auto.run(() => {
           date: key,
           count: value.length,
         }));
+        const countAll = countArr.reduce((sum, value) => (
+          sum + value.count
+        ), 0);
+
         const startDate = Moment.utc(req.query.start_time ? new Date(req.query.start_time) : countArr[0].date);
         const endDate = Moment.utc(req.query.end_time ? new Date(req.query.end_time) : countArr[countArr.length - 1].date);
 
         const allDates = createDateArray(startDate, endDate, interval);
         const allDatesWithCounts = _.unionBy(countArr, allDates, 'date');
 
+        const trendData = {};
+        trendData.trend = _.orderBy(allDatesWithCounts, 'date');
+        trendData.total = countAll;
+
         console.log(allDatesWithCounts);
-        res.send(_.orderBy(allDatesWithCounts, 'date'));
+        res.send(trendData);
       })
       .catch(err =>
         console.error(err)

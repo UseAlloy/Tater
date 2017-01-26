@@ -35,7 +35,7 @@ class Tater extends React.Component {
       '_handleUpdateState',
       '_handleUpdateDateRange',
       '_handleUpdateFocusedInput',
-      'generateChart',
+      'generateLineChart',
       'requestData',
     ].forEach((method) => { this[method] = this[method].bind(this); });
 
@@ -82,9 +82,9 @@ class Tater extends React.Component {
   }
 
 
-  generateChart() {
+  generateLineChart(id) {
     main = new Keen.Dataviz()
-      .el(document.getElementById('tater-chart'))
+      .el(document.getElementById(id))
       .chartType('line')
       .height(250)
       .colors(['#6ab975'])
@@ -133,11 +133,12 @@ class Tater extends React.Component {
           timestamp_field: this.state.columnName,
         },
         success: (data) => {
+          const trend = data.trend;
           const mainDataSet = new Dataset();
-          Object.keys(data).forEach((key) => {
-            mainDataSet.set([this.state.tableName, data[key].date], data[key].count);
+          Object.keys(trend).forEach((key) => {
+            mainDataSet.set([this.state.tableName, trend[key].date], trend[key].count);
           });
-          this.setState({ tableData: mainDataSet }, () => { this.generateChart(); });
+          this.setState({ tableData: mainDataSet }, () => { this.generateLineChart('tater-chart'); });
         },
         error: () => { console.log('Something went wrong.'); },
       });
@@ -240,6 +241,31 @@ class Tater extends React.Component {
                   </div>
                   <div id="tater-chart" />
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-4">
+            <div className="chart-wrapper">
+              <div className="chart-stage">
+                <div id="metric-01" />
+              </div>
+            </div>
+          </div>
+
+          <div className="col-sm-4">
+            <div className="chart-wrapper">
+              <div className="chart-stage">
+                <div id="metric-02" />
+              </div>
+            </div>
+          </div>
+
+          <div className="col-sm-4">
+            <div className="chart-wrapper">
+              <div className="chart-stage">
+                <div id="metric-03" />
               </div>
             </div>
           </div>
