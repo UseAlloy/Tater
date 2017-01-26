@@ -25,7 +25,23 @@ const TaterPropTypes = {
   timestampTables: PropTypes.array.isRequired,
 };
 
-let main = '';
+function calculateAverageGrowth(trend) {
+  console.log(trend);
+  const totalChange = trend[trend.length - 1].count / trend[0].count;
+  const exponentChange = (1 / (trend.length - 1));
+  const averageGrowth = Math.pow(totalChange, exponentChange) - 1;
+  return averageGrowth;
+}
+
+function generateMetricChart(element, title, data) {
+  new Keen.Dataviz()
+    .el(document.getElementById(element))
+    .title(title)
+    .type('metric')
+    .prepare()
+    .data({ result: data })
+    .render();
+}
 
 class Tater extends React.Component {
   constructor(props) {
@@ -35,7 +51,7 @@ class Tater extends React.Component {
       '_handleUpdateState',
       '_handleUpdateDateRange',
       '_handleUpdateFocusedInput',
-      'generateLineChart',
+      'generateMainChart',
       'requestData',
     ].forEach((method) => { this[method] = this[method].bind(this); });
 
@@ -45,7 +61,7 @@ class Tater extends React.Component {
       startDate: moment().subtract(3, 'months').utc(),
       endDate: moment().utc(),
       interval: 'day',
-      tableData: [],
+      tableData: {},
       focusedInput: null,
     };
   }
@@ -81,10 +97,9 @@ class Tater extends React.Component {
     this.setState({ focusedInput });
   }
 
-
-  generateLineChart(id) {
-    main = new Keen.Dataviz()
-      .el(document.getElementById(id))
+  generateMainChart(element) {
+    const main = new Keen.Dataviz()
+      .el(document.getElementById(element))
       .chartType('line')
       .height(250)
       .colors(['#6ab975'])
@@ -116,10 +131,9 @@ class Tater extends React.Component {
         },
       })
     .prepare()
-    .data(this.state.tableData)
+    .data(this.state.tableData.trend)
     .render();
   }
-
 
   requestData() {
     if (this.state.tableName && this.state.columnName) {
@@ -138,7 +152,14 @@ class Tater extends React.Component {
           Object.keys(trend).forEach((key) => {
             mainDataSet.set([this.state.tableName, trend[key].date], trend[key].count);
           });
-          this.setState({ tableData: mainDataSet }, () => { this.generateLineChart('tater-chart'); });
+          const tableDataObj = {};
+          tableDataObj.trend = mainDataSet;
+          this.setState({ tableData: tableDataObj }, () => {
+            this.generateMainChart('tater-chart');
+            generateMetricChart('metric-01', `Total This ${this.state.interval}`, trend[trend.length -1].count);
+            generateMetricChart('metric-02', 'Total In Range', data.total);
+            generateMetricChart('metric-03', 'Average Growth', calculateAverageGrowth(trend));
+          });
         },
         error: () => { console.log('Something went wrong.'); },
       });

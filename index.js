@@ -119,7 +119,6 @@ auto.run(() => {
         trendData.trend = _.orderBy(allDatesWithCounts, 'date');
         trendData.total = countAll;
 
-        console.log(allDatesWithCounts);
         res.send(trendData);
       })
       .catch(err =>
