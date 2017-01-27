@@ -110,7 +110,7 @@ auto.run(() => {
           date: Moment.utc(value.dataValues.date).startOf(interval).format(),
           count: Number(value.dataValues.count),
         }));
-        const countAll = countArr.reduce((sum = 0, value) => (
+        const countAll = countArr.reduce((sum, value) => (
           sum + value.count
         ), 0);
 
