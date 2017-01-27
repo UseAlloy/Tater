@@ -94,16 +94,20 @@ auto.run(() => {
     }
 
     return model.schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({
+      attributes: [
+        [sequelize.fn('DATE_FORMAT', sequelize.col(timestampField), '%Y-%m-%d'), 'date'],
+        [sequelize.fn('count', sequelize.col('*')), 'count'],
+      ],
       where: whereClause,
       order: `${timestampField} ASC`,
+      group: 'date',
     })
       .then((data) => {
-        const groups = _.groupBy(data, inst =>
-          Moment.utc(inst.dataValues.timestamp).startOf(interval).format()
-        );
-        const countArr = _.map(groups, (value, key) => ({
-          date: key,
-          count: value.length,
+        // console.log(data);
+
+        const countArr = _.map(data, value => ({
+          date: value.dataValues.date,
+          count: value.dataValues.count,
         }));
         const countAll = countArr.reduce((sum, value) => (
           sum + value.count
