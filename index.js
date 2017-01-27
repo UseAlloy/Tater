@@ -1,4 +1,5 @@
 const Config = require('./config');
+const DBConfig = require('./database-config');
 const Express = require('express');
 const SequelizeAuto = require('sequelize-auto');
 const Sequelize = require('sequelize');
@@ -95,21 +96,21 @@ auto.run(() => {
 
     return model.schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({
       attributes: [
-        [sequelize.fn('DATE_FORMAT', sequelize.col(timestampField), '%Y-%m-%d'), 'date'],
+        [sequelize.fn(DBConfig.dbNormalizer.dateGroupFunction, sequelize.col(timestampField), DBConfig.dbNormalizer.dateGroupFormat), 'date'],
         [sequelize.fn('count', sequelize.col('*')), 'count'],
       ],
       where: whereClause,
-      order: `${timestampField} ASC`,
+      order: `date ASC`,
       group: 'date',
     })
       .then((data) => {
         // console.log(data);
 
         const countArr = _.map(data, value => ({
-          date: value.dataValues.date,
-          count: value.dataValues.count,
+          date: Moment.utc(value.dataValues.date).startOf(interval).format(),
+          count: Number(value.dataValues.count),
         }));
-        const countAll = countArr.reduce((sum, value) => (
+        const countAll = countArr.reduce((sum = 0, value) => (
           sum + value.count
         ), 0);
 
