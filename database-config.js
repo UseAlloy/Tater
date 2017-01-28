@@ -2,16 +2,9 @@ const Config = require('./config');
 
 const dbNormalizer = {};
 dbNormalizer.dateGroupFormat = {};
-
-if (Config.database.sequelizeOptions.dialect === 'postgres') {
-  dbNormalizer.dateGroupFunction = 'to_char';
-  dbNormalizer.dateGroupFormat.day = 'YYYY-mm-dd';
-  dbNormalizer.dateGroupFormat.month = 'YYYY-mm';
-} else {
-  dbNormalizer.dateGroupFunction = 'DATE_FORMAT';
-  dbNormalizer.dateGroupFormat.day = '%Y-%m-%d';
-  dbNormalizer.dateGroupFormat.month = '%Y-%m';
-}
+dbNormalizer.dateGroupFunction = Config.database.sequelizeOptions.dialect === 'postgres' ? 'to_char' : 'DATE_FORMAT';
+dbNormalizer.dateGroupFormat.day = Config.database.sequelizeOptions.dialect === 'postgres' ? 'YYYY-mm-dd' : '%Y-%m-%d';
+dbNormalizer.dateGroupFormat.month = Config.database.sequelizeOptions.dialect === 'postgres' ? 'YYYY-mm' : '%Y-%m';
 
 module.exports = {
   dbNormalizer: {
