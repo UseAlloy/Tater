@@ -96,7 +96,7 @@ auto.run(() => {
 
     return model.schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({
       attributes: [
-        [sequelize.fn(DBConfig.dbNormalizer.dateGroupFunction, sequelize.col(timestampField), DBConfig.dbNormalizer.dateGroupFormat), 'date'],
+        [sequelize.fn(DBConfig.dbNormalizer.dateGroupFunction, sequelize.col(timestampField), DBConfig.dbNormalizer.dateGroupFormat[interval]), 'date'],
         [sequelize.fn('count', sequelize.col('*')), 'count'],
       ],
       where: whereClause,
