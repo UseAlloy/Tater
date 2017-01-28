@@ -26,7 +26,6 @@ const TaterPropTypes = {
 };
 
 function calculateAverageGrowth(trend) {
-  console.log(trend);
   const totalChange = trend[trend.length - 1].count / trend[0].count;
   const exponentChange = (1 / (trend.length - 1));
   const averageGrowth = (Math.pow(totalChange, exponentChange) - 1) * 100;
@@ -58,7 +57,7 @@ class Tater extends React.Component {
     this.state = {
       tableName: false,
       columnName: false,
-      startDate: moment().subtract(3, 'months'),
+      startDate: moment().subtract(3, 'months').startOf('day'),
       endDate: moment(),
       interval: 'day',
       tableData: {},
@@ -137,12 +136,13 @@ class Tater extends React.Component {
 
   requestData() {
     if (this.state.tableName && this.state.columnName) {
+
       $.ajax({
         url: `/tables/${this.state.tableName}/trend`,
         method: 'GET',
         data: {
-          start_time: this.state.startDate.format(),
-          end_time: this.state.endDate.format(),
+          start_time: this.state.startDate.startOf('day').format(),
+          end_time: this.state.endDate.endOf('day').format(),
           interval: this.state.interval,
           timestamp_field: this.state.columnName,
         },
@@ -158,7 +158,7 @@ class Tater extends React.Component {
             this.generateMainChart('tater-chart');
             generateMetricChart('metric-01', `Total This ${this.state.interval}`, trend[trend.length -1].count);
             generateMetricChart('metric-02', 'Total In Range', data.total);
-            generateMetricChart('metric-03', 'Average Growth', calculateAverageGrowth(trend));
+            generateMetricChart('metric-03', 'Average Growth %', calculateAverageGrowth(trend));
           });
         },
         error: () => { console.log('Something went wrong.'); },

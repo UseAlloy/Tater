@@ -87,11 +87,11 @@ auto.run(() => {
     const interval = req.query.interval || Config.defaults.interval;
 
     if (req.query.start_time) {
-      whereClause[timestampField].$gte = req.query.start_time;
+      whereClause[timestampField].$gte = Moment.utc(req.query.start_time).format();
     }
 
     if (req.query.end_time) {
-      whereClause[timestampField].$lte = req.query.end_time;
+      whereClause[timestampField].$lte = Moment.utc(req.query.end_time).format();
     }
 
     return model.schema(Config.database.sequelizeOptions.dialectOptions.schema).findAll({
