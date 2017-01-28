@@ -29,7 +29,7 @@ function calculateAverageGrowth(trend) {
   console.log(trend);
   const totalChange = trend[trend.length - 1].count / trend[0].count;
   const exponentChange = (1 / (trend.length - 1));
-  const averageGrowth = Math.pow(totalChange, exponentChange) - 1;
+  const averageGrowth = (Math.pow(totalChange, exponentChange) - 1) * 100;
   return averageGrowth;
 }
 
@@ -58,8 +58,8 @@ class Tater extends React.Component {
     this.state = {
       tableName: false,
       columnName: false,
-      startDate: moment().subtract(3, 'months').utc(),
-      endDate: moment().utc(),
+      startDate: moment().subtract(3, 'months'),
+      endDate: moment(),
       interval: 'day',
       tableData: {},
       focusedInput: null,
