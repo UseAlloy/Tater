@@ -1,4 +1,7 @@
 const Config = require('./config');
+const Moment = require('moment');
+
+Config.database.sequelizeOptions.timezone = Moment().format('Z');
 
 const dbType = Config.database.sequelizeOptions.dialect;
 const dbNormalizer = {};
