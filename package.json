@@ -45,7 +45,7 @@
     "react-dates": "^4.3.2",
     "react-dom": "^15.4.1",
     "sass-loader": "^4.1.1",
-    "sequelize": "^3.27.0",
+    "sequelize": "^6.3.4",
     "sequelize-auto": "https://github.com/UseAlloy/sequelize-auto.git",
     "style-loader": "^0.13.1",
     "underscore": "^1.8.3",
